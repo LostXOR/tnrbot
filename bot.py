@@ -13,9 +13,9 @@ def getGuild(guildID):
 def getUser(guildID, userID):
     userID = str(userID)
     guildData = getGuild(guildID)
-    if userID not in guildData:
-        guildData[userID] = {"xp": 0, "lastxp": 0}
-    return guildData[userID]
+    if userID not in guildData["users"]:
+        guildData["users"][userID] = {"xp": 0, "lastxp": 0}
+    return guildData["users"][userID]
 
 # Calculate total XP given a level
 def calcTotalXP(level):

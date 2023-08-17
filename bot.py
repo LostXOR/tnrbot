@@ -129,8 +129,8 @@ async def leaderboard(
     leaderboardText = ""
     for i in range(len(leaderboard)):
         xpProgress, xpLevel, level = calcLevel(leaderboard[i][1]["xp"])
-        member = await interaction.guild.fetch_member(leaderboard[i][0])
-        leaderboardText += f"{i + (page - 1) * config['pageSize'] + 1}. {member.name}, Level {level}, {xpProgress}/{xpLevel} XP\n"
+        user = await bot.fetch_user(leaderboard[i][0])
+        leaderboardText += f"{i + (page - 1) * config['pageSize'] + 1}. {user.name}, Level {level}, {xpProgress}/{xpLevel} XP\n"
     embed = createEmbed(
         interaction.guild.name,
         interaction.guild.icon.url if interaction.guild.icon else None,

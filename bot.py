@@ -7,7 +7,7 @@ import config
 def getUserData(guildID, userID):
     cursor.execute(f"CREATE TABLE IF NOT EXISTS '{guildID}' (id, xp, lastxptime, cachedname, UNIQUE(id))")
     data = cursor.execute(f"SELECT * FROM '{guildID}' WHERE id = ?", [userID]).fetchone()
-    return list(data) if data else [userID, 0, 0, ""]
+    return list(data) if data else [userID, 0, 0, None]
 
 # Save data for a user
 def setUserData(guildID, userID, data):

@@ -1,4 +1,4 @@
-import nextcord, json, os, time
+import nextcord, json, os, time, heapq
 from datetime import datetime
 from nextcord.ext import commands
 
@@ -47,9 +47,11 @@ config = json.loads(open("config.json", "r").read())
 db = json.loads(open("db.json", "r").read()) if os.path.exists("db.json") else {}
 bot = commands.Bot(intents = nextcord.Intents.all())
 
+
 @bot.event
 async def on_ready():
     print("Bot started")
+
 
 @bot.event
 async def on_message(msg):
@@ -63,26 +65,80 @@ async def on_message(msg):
         userData["xp"] += config["xpPerMessage"]
         saveDB()
 
+
 @bot.slash_command(description = "Get a user's level")
-async def level(interaction: nextcord.Interaction, user: nextcord.Member = nextcord.SlashOption(name = "user", required = False)):
+async def level(
+    interaction: nextcord.Interaction,
+    user: nextcord.Member = nextcord.SlashOption(name = "user", required = False)
+):
     if not user:
         user = interaction.user
     xpProgress, xpLevel, level = calcLevel(getUser(interaction.guild.id, user.id)["xp"])
-    embed = createEmbed(user.name, user.display_avatar.url, f"Level {level}, {xpProgress}/{xpLevel} XP", "", interaction.user, 0x00FF00)
+    embed = createEmbed(
+        user.name,
+        user.display_avatar.url,
+        f"Level {level}, {xpProgress}/{xpLevel} XP",
+        "",
+        interaction.user, 0x00FF00
+    )
     await interaction.send(embeds = [embed])
 
+
 @bot.slash_command(description = "Set a user's level and XP")
-async def set_level(interaction: nextcord.Interaction, user: nextcord.Member = nextcord.SlashOption(name = "user"), level: int = nextcord.SlashOption(name = "level"), xp: int = nextcord.SlashOption(name = "xp")):
+async def set_level(
+    interaction: nextcord.Interaction,
+    user: nextcord.Member = nextcord.SlashOption(name = "user"),
+    level: int = nextcord.SlashOption(name = "level"),
+    xp: int = nextcord.SlashOption(name = "xp")
+):
     if interaction.channel.permissions_for(interaction.user).administrator:
         userData = getUser(interaction.guild.id, user.id)
         level = max(min(level, 1000), 0)
         xp = max(min(xp, calcXP(level) - 1), 0)
         userData["xp"] = calcTotalXP(level) + xp
-        embed = createEmbed(user.name, user.display_avatar.url, f"Set to level {level}, {xp}/{calcXP(level)} XP", "", interaction.user, 0x00FF00)
+        embed = createEmbed(
+            user.name,
+            user.display_avatar.url,
+            f"Set to level {level}, {xp}/{calcXP(level)} XP",
+            "",
+            interaction.user,
+            0x00FF00
+        )
     else:
-        embed = createEmbed("", None, f"Only administrators can use this command!", "", interaction.user, 0xFF0000)
-
+        embed = createEmbed(
+            "",
+            None,
+            "Only administrators can use this command!",
+            "",
+            interaction.user,
+            0xFF0000
+        )
     await interaction.send(embeds = [embed])
     saveDB()
+
+
+@bot.slash_command(description = "Get the leaderboard for a guild")
+async def leaderboard(
+    interaction: nextcord.Interaction,
+    page: int = nextcord.SlashOption(name = "page", required = False)
+):
+    users = getGuild(interaction.guild.id)["users"]
+    page = max(min(page, (len(users) - 1) // config["pageSize"] + 1), 1) if page else 1
+    leaderboard = heapq.nlargest(page * config["pageSize"], users.items(), key = lambda u: u[1]["xp"])[(page - 1) * config["pageSize"]:]
+
+    leaderboardText = ""
+    for i in range(len(leaderboard)):
+        xpProgress, xpLevel, level = calcLevel(leaderboard[i][1]["xp"])
+        member = await interaction.guild.fetch_member(leaderboard[i][0])
+        leaderboardText += f"{i + (page - 1) * config['pageSize'] + 1}. {member.name}, Level {level}, {xpProgress}/{xpLevel} XP\n"
+    embed = createEmbed(
+        interaction.guild.name,
+        interaction.guild.icon.url if interaction.guild.icon else None,
+        f"Leaderboard, page {page}/{(len(users) - 1) // config['pageSize'] + 1}",
+        leaderboardText,
+        interaction.user,
+        0x00FF00
+    )
+    await interaction.send(embeds = [embed])
 
 bot.run(config["botToken"])

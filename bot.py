@@ -1,18 +1,18 @@
-import nextcord, config, db
-from nextcord import SlashOption, Member, Interaction
+import config, db
+from nextcord import SlashOption, Member, Interaction, Embed, Intents
 from datetime import datetime
 from nextcord.ext import commands
 
 # Create an embed with given parameters
 def createEmbed(name, icon, title, description, author, color):
-    embed = nextcord.Embed(title = title, description = description, color = color, timestamp = datetime.now())
-    embed.set_author(name = name, icon_url = icon.url)
+    embed = Embed(title = title, description = description, color = color, timestamp = datetime.now())
+    embed.set_author(name = name, icon_url = icon.url if icon else None)
     embed.set_footer(text = "Requested by " + author.name, icon_url = author.display_avatar.url)
     return embed
 
 # Initialize database and bot
 db = db.Database(config.databasePath)
-bot = commands.Bot(intents = nextcord.Intents.all())
+bot = commands.Bot(intents = Intents.all())
 
 @bot.event
 async def on_ready():
@@ -20,7 +20,6 @@ async def on_ready():
 
 @bot.event
 async def on_message(msg):
-    print("e")
     if msg.author.bot: return
     # Get user data from database and update cached name
     user = db.getUser(msg.guild, msg.author)

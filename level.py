@@ -13,7 +13,7 @@ class Level:
         return self.__XP
     # Get level
     def getLevel(self):
-        level = 1
+        level = 0
         while self.__XP >= self.__getTotalXP(level + 1):
             level += 1
         return level

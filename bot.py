@@ -99,7 +99,7 @@ async def leaderboard(
     maxPages = (userCount - 1) // config.pageSize
     page = max(min(page, maxPages), 0)
     # Get leaderboard page
-    leaderboard = db.getLeaderboard(interaction.guild, page * config.pageSize, (page + 1) * config.pageSize)
+    leaderboard = db.getLeaderboard(interaction.guild, page * config.pageSize, config.pageSize)
     # Generate leaderboard text
     leaderboardText = ""
     for i in range(len(leaderboard)):

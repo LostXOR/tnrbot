@@ -1,21 +1,8 @@
-import nextcord, config, db
-from datetime import datetime
-
-# Create an embed with given parameters
-# Object: None, Guild, or Member
-def createEmbed(object, title, description, author, color):
-    embed = nextcord.Embed(title = title, description = description, color = color, timestamp = datetime.now())
-    name = object.name if object else None
-    if isinstance(object, nextcord.Member): icon = object.display_avatar.url
-    elif isinstance(object, nextcord.Guild): icon = object.icon.url if object.icon else None
-    else: icon = None
-    embed.set_author(name = name, icon_url = icon)
-    embed.set_footer(text = "Requested by " + author.name, icon_url = author.display_avatar.url)
-    return embed
+import nextcord, config, db, embed
 
 # Initialize database and bot
 db = db.Database(config.databasePath)
-bot = nextcord.Client(intents = Intents.all())
+bot = nextcord.Client(intents = nextcord.Intents.all())
 
 @bot.event
 async def on_ready():
@@ -49,15 +36,17 @@ async def level(intr: nextcord.Interaction, member: nextcord.Member = nextcord.S
     member = member if member else intr.user
     user = db.getUser(intr.guild, member)
     # Embed and send
-    embed = createEmbed(member, str(user.level), "", intr.user, 0x00FF00)
-    await intr.send(embeds = [embed])
+    await intr.send(embeds = [
+        embed.createEmbed(member, str(user.level), "", intr.user, 0x00FF00)
+    ])
 
 @bot.slash_command(description = "Set a user's level and XP")
 async def set_level(intr: nextcord.Interaction, member: nextcord.Member = nextcord.SlashOption(name = "user"), level: int = nextcord.SlashOption(name = "level"), xp: int = nextcord.SlashOption(name = "xp")):
     # Exit if the command executor doesn't have admin permissions
     if not intr.channel.permissions_for(intr.user).administrator:
-        embed = createEmbed(None, "Only admins can use this command.", "", intr.user, 0xFF0000)
-        await intr.send(embeds = [embed])
+        await intr.send(embeds = [
+            embed.createEmbed(None, "Only admins can use this command.", "", intr.user, 0xFF0000)
+        ])
         return
     # Set new user XP
     user = db.getUser(intr.guild, member)
@@ -65,8 +54,9 @@ async def set_level(intr: nextcord.Interaction, member: nextcord.Member = nextco
     user.level.setLevel(level, xp)
     db.saveUser(user)
     # Success message
-    embed = createEmbed(member, f"Set to {user.level}", "", intr.user, 0x00FF00)
-    await intr.send(embeds = [embed])
+    await intr.send(embeds = [
+        embed.createEmbed(member, f"Set to {user.level}", "", intr.user, 0x00FF00)
+    ])
 
 @bot.slash_command(description = "Get the leaderboard for a guild")
 async def leaderboard(intr: nextcord.Interaction, page: int = nextcord.SlashOption(name = "page", required = False)):
@@ -76,7 +66,7 @@ async def leaderboard(intr: nextcord.Interaction, page: int = nextcord.SlashOpti
     page -= 1
     userCount = db.getUserCount(intr.guild)
     maxPages = (userCount - 1) // config.pageSize
-    page = max(min(page, maxPages), 0)
+    page = min(max(page, 0), maxPages)
     # Get leaderboard page
     leaderboard = db.getLeaderboard(intr.guild, page * config.pageSize, config.pageSize)
     # Generate leaderboard text
@@ -85,7 +75,8 @@ async def leaderboard(intr: nextcord.Interaction, page: int = nextcord.SlashOpti
         user = leaderboard[i]
         leaderboardText += f"{1 + i + page * config.pageSize}. {user.getCachedName()}, {user.level}\n"
     # Send embed
-    embed = createEmbed(intr.guild, f"Leaderboard, page {page + 1}/{maxPages + 1}", leaderboardText, intr.user, 0x00FF00)
-    await intr.send(embeds = [embed])
+    await intr.send(embeds = [
+        embed.createEmbed(intr.guild, f"Leaderboard, page {page + 1}/{maxPages + 1}", leaderboardText, intr.user, 0x00FF00)
+    ])
 
 bot.run(config.botToken)

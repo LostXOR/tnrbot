@@ -1,11 +1,9 @@
-import config, db
-from nextcord import SlashOption, Member, Interaction, Embed, Intents, Member, Guild, Game
+import nextcord, config, db
 from datetime import datetime
-from nextcord.ext import commands
 
 # Create an embed with given parameters
 def createEmbed(object, title, description, author, color):
-    embed = Embed(title = title, description = description, color = color, timestamp = datetime.now())
+    embed = nextcord.Embed(title = title, description = description, color = color, timestamp = datetime.now())
     name = object.name if object else None
     if isinstance(object, Member): icon = object.display_avatar.url
     elif isinstance(object, Guild): icon = object.icon.url if object.icon else None
@@ -16,12 +14,12 @@ def createEmbed(object, title, description, author, color):
 
 # Initialize database and bot
 db = db.Database(config.databasePath)
-bot = commands.Bot(intents = Intents.all())
+bot = nextcord.Client(intents = Intents.all())
 
 @bot.event
 async def on_ready():
     # Set status to "Playing Whack-a-MEE6"
-    status = Game("Whack-a-MEE6")
+    status = nextcord.Game("Whack-a-MEE6")
     await bot.change_presence(activity = status)
     print("Bot started")
 
@@ -45,7 +43,7 @@ async def on_message(msg):
     db.saveUser(user)
 
 @bot.slash_command(description = "Get a user's level")
-async def level(intr: Interaction, member: Member = SlashOption(name = "user", required = False)):
+async def level(intr: nextcord.Interaction, member: nextcord.Member = nextcord.SlashOption(name = "user", required = False)):
     # Fetch user data
     member = member if member else intr.user
     user = db.getUser(intr.guild, member)
@@ -54,7 +52,7 @@ async def level(intr: Interaction, member: Member = SlashOption(name = "user", r
     await intr.send(embeds = [embed])
 
 @bot.slash_command(description = "Set a user's level and XP")
-async def set_level(intr: Interaction, member: Member = SlashOption(name = "user"), level: int = SlashOption(name = "level"), xp: int = SlashOption(name = "xp")):
+async def set_level(intr: nextcord.Interaction, member: nextcord.Member = nextcord.SlashOption(name = "user"), level: int = nextcord.SlashOption(name = "level"), xp: int = nextcord.SlashOption(name = "xp")):
     # Exit if the command executor doesn't have admin permissions
     if not intr.channel.permissions_for(intr.user).administrator:
         embed = createEmbed(None, "Only admins can use this command.", "", intr.user, 0xFF0000)
@@ -70,7 +68,7 @@ async def set_level(intr: Interaction, member: Member = SlashOption(name = "user
     await intr.send(embeds = [embed])
 
 @bot.slash_command(description = "Get the leaderboard for a guild")
-async def leaderboard(intr: Interaction, page: int = SlashOption(name = "page", required = False)):
+async def leaderboard(intr: nextcord.Interaction, page: int = nextcord.SlashOption(name = "page", required = False)):
     # Calculate maximum pages and clamp page number
     if page is None:
         page = 1
@@ -88,4 +86,5 @@ async def leaderboard(intr: Interaction, page: int = SlashOption(name = "page", 
     # Send embed
     embed = createEmbed(intr.guild, f"Leaderboard, page {page + 1}/{maxPages + 1}", leaderboardText, intr.user, 0x00FF00)
     await intr.send(embeds = [embed])
+
 bot.run(config.botToken)

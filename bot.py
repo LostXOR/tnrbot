@@ -20,10 +20,19 @@ bot = commands.Bot(intents = Intents.all())
 
 @bot.event
 async def on_ready():
+    # Set status to "Playing Whack-a-MEE6"
+    status = nextcord.Game("Whack-a-MEE6")
+    await bot.change_presence(activity = status)
     print("Bot started")
 
 @bot.event
 async def on_message(msg):
+    # Respond to mistypings of !rank (Added at the request of TinRobit)
+    if msg.content == "!raml":
+        await msg.channel.send("https://imgur.com/a/fHdLJZU")
+    if msg.content == "!rabk":
+        await msg.channel.send("<:roboHolyDivided0:834465408135987220>")
+
     if msg.author.bot: return
     # Get user data from database and update cached name
     user = db.getUser(msg.guild, msg.author)

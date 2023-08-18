@@ -2,6 +2,9 @@
 class Level:
     def __init__(self, xp):
         self.__XP = xp
+    # Human-readable str() function
+    def __str__(self):
+        return f"Level {self.getLevel()}, {self.getXPProgress()}/{self.getXPLevel()} XP"
     # Get total XP to reach a level
     def __getTotalXP(self, level):
         return (10 * level ** 3 + 135 * level ** 2 + 455 * level) // 6

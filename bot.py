@@ -1,5 +1,5 @@
 import config, db
-from nextcord import SlashOption, Member, Interaction, Embed, Intents, Member, Guild
+from nextcord import SlashOption, Member, Interaction, Embed, Intents, Member, Guild, Game
 from datetime import datetime
 from nextcord.ext import commands
 
@@ -21,7 +21,7 @@ bot = commands.Bot(intents = Intents.all())
 @bot.event
 async def on_ready():
     # Set status to "Playing Whack-a-MEE6"
-    status = nextcord.Game("Whack-a-MEE6")
+    status = Game("Whack-a-MEE6")
     await bot.change_presence(activity = status)
     print("Bot started")
 

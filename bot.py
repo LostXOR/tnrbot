@@ -8,7 +8,7 @@ def createEmbed(object, title, description, author, color):
     embed = Embed(title = title, description = description, color = color, timestamp = datetime.now())
     name = object.name if object else None
     if isinstance(object, Member): icon = object.display_avatar.url
-    elif isinstance(object, Guild) is Guild: icon = object.icon.url if object.icon else None
+    elif isinstance(object, Guild): icon = object.icon.url if object.icon else None
     else: icon = None
     embed.set_author(name = name, icon_url = icon)
     embed.set_footer(text = "Requested by " + author.name, icon_url = author.display_avatar.url)

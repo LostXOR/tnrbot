@@ -1,6 +1,6 @@
 
-# LevelBot
-This is a simple Discord bot that keeps track of users' levels. It's not much, but I thought I'd put it on GitHub in case anyone found it useful.
+# TNRBot
+This is the Discord bot for the TotallyNotRobots Discord server.
 ## Installation
 Install `nextcord` and clone the repository.
 ```

@@ -27,6 +27,11 @@ async def on_message(msg):
     if user.getLastXPTime() + config.xpTimeout < msg.created_at.timestamp():
         user.setLastXPTime(msg.created_at.timestamp())
         user.level.addXP(config.xpPerMessage)
+        # Send a level up message if user's XP is less than the XP per message (user just leveled up)
+        if config.announceLevelUp and user.level.getXPProgress() < config.xpPerMessage:
+            await msg.channel.send(embeds = [
+                embed.createEmbed(msg.author, f"Leveled up to level {user.level.getLevel()}!", "", None, 0x00FF00)
+            ])
     # Save user data to database
     db.saveUser(user)
 

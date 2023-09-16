@@ -8,5 +8,5 @@ def createEmbed(object, title, description, author, color):
     elif isinstance(object, nextcord.Guild): icon = object.icon.url if object.icon else None
     else: icon = None
     embed.set_author(name = name, icon_url = icon)
-    embed.set_footer(text = "Requested by " + author.name, icon_url = author.display_avatar.url)
+    if author: embed.set_footer(text = "Requested by " + author.name, icon_url = author.display_avatar.url)
     return embed

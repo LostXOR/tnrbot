@@ -16,8 +16,11 @@ async def on_message(msg):
     # Respond to mistypings of !rank (Added at the request of TinRobit)
     if msg.content == "!raml":
         await msg.channel.send("https://imgur.com/a/fHdLJZU")
-    if msg.content == "!rabk":
+    elif msg.content == "!rabk":
         await msg.channel.send("<:roboHolyDivided0:834465408135987220>")
+    # Respond to "/halp" with bird chopsticks picture (sent by LesPaulII)
+    elif msg.content == "/halp":
+        await msg.channel.send(files = [nextcord.File("bird_halp.jpg")])
 
     if msg.author.bot: return
     # Get user data from database and update cached name

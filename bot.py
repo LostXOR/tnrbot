@@ -29,9 +29,6 @@ async def on_interaction(intr):
     elif intr.data["custom_id"] == humanButton:
         roleToRemove = humanRole if intr.user.get_role(humanRole) else robotRole if intr.user.get_role(robotRole) else None
         roleToAdd = humanRole if not intr.user.get_role(humanRole) else None
-    # Add/remove roles
-    if roleToAdd: await intr.user.add_roles(nextcord.Object(roleToAdd))
-    if roleToRemove: await intr.user.remove_roles(nextcord.Object(roleToRemove))
     # Send response to interaction
     if roleToAdd and not roleToRemove: embedText = f"Added <@&{roleToAdd}>"
     elif roleToRemove and not roleToAdd: embedText = f"Removed <@&{roleToRemove}>"
@@ -39,6 +36,9 @@ async def on_interaction(intr):
     await intr.send(embeds = [
         embed.createEmbed(intr.user, "", embedText, intr.user, 0x00FF00)
     ], ephemeral = True)
+    # Add/remove roles
+    if roleToAdd: await intr.user.add_roles(nextcord.Object(roleToAdd))
+    if roleToRemove: await intr.user.remove_roles(nextcord.Object(roleToRemove))
 
 @bot.event
 async def on_message(msg):

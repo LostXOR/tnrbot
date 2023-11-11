@@ -20,8 +20,8 @@ async def on_interaction(intr):
     robotRole = 1005309355182260327
     humanRole = 831569900777635922
     # Wrong message
-    if intr.message.id != rolesMessage:
-        return
+    if not intr.message or intr.message.id != rolesMessage:
+        await bot.process_application_commands(intr)
     # Figure out what roles need to be added and removed
     if intr.data["custom_id"] == robotButton:
         roleToRemove = robotRole if intr.user.get_role(robotRole) else humanRole if intr.user.get_role(humanRole) else None

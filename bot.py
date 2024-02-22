@@ -121,6 +121,12 @@ async def leaderboard(intr: nextcord.Interaction, page: int = nextcord.SlashOpti
 @bot.slash_command(description = "Factor a number")
 async def factor(intr: nextcord.Interaction, number: str):
     # Factor a number using a quadratic sieve
+    # Just for LesPaulII :)
+    if number == "💩":
+        await intr.send(embeds = [
+            embed.createEmbed(intr.guild, f"Factorization of {number}", "🧑 * 🍔", intr.user, 0x00FF00)
+        ])
+        return
     # Protect against any sort of command injection (and invalid numbers in general)
     try:
         numberSafe = int(number)

@@ -1,4 +1,4 @@
-import nextcord, config, db, embed
+import nextcord, config, db, embed, os, asyncio
 
 # Initialize database and bot
 db = db.Database(config.databasePath)
@@ -22,6 +22,8 @@ async def on_interaction(intr):
     # Wrong message
     if not intr.message or intr.message.id != rolesMessage:
         await bot.process_application_commands(intr)
+        return
+
     # Figure out what roles need to be added and removed
     if intr.data["custom_id"] == robotButton:
         roleToRemove = robotRole if intr.user.get_role(robotRole) else humanRole if intr.user.get_role(humanRole) else None
@@ -115,5 +117,55 @@ async def leaderboard(intr: nextcord.Interaction, page: int = nextcord.SlashOpti
     await intr.send(embeds = [
         embed.createEmbed(intr.guild, f"Leaderboard, page {page + 1}/{maxPages + 1}", leaderboardText, intr.user, 0x00FF00)
     ])
+
+@bot.slash_command(description = "Factor a number")
+async def factor(intr: nextcord.Interaction, number: str):
+    # Factor a number using a quadratic sieve
+    # Protect against any sort of command injection (and invalid numbers in general)
+    try:
+        numberSafe = int(number)
+    except:
+        await intr.send(embeds = [
+            embed.createEmbed(None, "Invalid number.", "", intr.user, 0xFF0000)
+        ])
+        return
+    # Protect against numbers that are unreasonably large
+    if numberSafe > 10 ** 224:
+        await intr.send(embeds = [
+            embed.createEmbed(None, "Number must be less than 10^224.", "", intr.user, 0xFF0000)
+        ])
+        return
+
+    # Run qs on the number in the background
+    command = os.path.dirname(__file__) + "/qs --limit=99999 -s " + str(numberSafe)
+    process = await asyncio.create_subprocess_shell(command, stdout = asyncio.subprocess.PIPE, stderr = asyncio.subprocess.PIPE)
+    # Start handler for long running factorings
+    task = asyncio.create_task(handleLong(intr, process))
+    result, err = await process.communicate()
+    # Cancel handler
+    task.cancel()
+
+    # Process threw an error
+    if err:
+        await intr.send(embeds = [
+            embed.createEmbed(None, "Error during factorization.", "", intr.user, 0xFF0000)
+        ])
+    # Process timed out and was killed
+    elif result == b"":
+        await intr.send(embeds = [
+            embed.createEmbed(None, "Timeout during factorization.", "", intr.user, 0xFF0000)
+        ])
+    # Success
+    else:
+        await intr.send(embeds = [
+            embed.createEmbed(intr.guild, f"Factorization of {numberSafe}", result.decode(), intr.user, 0x00FF00)
+        ])
+
+# Handle long-running factorings by deferring response after 2 seconds and killing after 60 seconds
+async def handleLong(intr, process):
+    await asyncio.sleep(2)
+    await intr.response.defer()
+    await asyncio.sleep(60)
+    await process._transport.close()
 
 bot.run(config.botToken)

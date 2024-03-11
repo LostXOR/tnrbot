@@ -3,7 +3,7 @@ from datetime import datetime
 
 def createEmbed(object, title, description, author, color):
     embed = nextcord.Embed(title = title, description = description, color = color, timestamp = datetime.now())
-    name = object.name if object else None
+    name = object.name if object else ""
     if isinstance(object, nextcord.Member): icon = object.display_avatar.url
     elif isinstance(object, nextcord.Guild): icon = object.icon.url if object.icon else None
     else: icon = None

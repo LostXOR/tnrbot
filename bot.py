@@ -1,8 +1,9 @@
-import nextcord, config, db, embed, os, asyncio
+import nextcord, config, db, embed, os, asyncio, random, requests
 
 # Initialize database and bot
 db = db.Database(config.databasePath)
 bot = nextcord.Client(intents = nextcord.Intents.all())
+loop = asyncio.get_event_loop()
 
 @bot.event
 async def on_ready():
@@ -173,5 +174,52 @@ async def handleLong(intr, process):
     await intr.response.defer()
     await asyncio.sleep(60)
     await process._transport.close()
+
+# Fetch an xkcd
+async def fetchxkcd(num, intr):
+    # Get latest xkcd data
+    response = await loop.run_in_executor(None, requests.get, "https://xkcd.com/info.0.json")
+    latest = response.json()
+    # Pick random xkcd from 1 to latest
+    if num == "random":
+        randomNum = random.randint(1, latest["num"])
+        response = await loop.run_in_executor(None, requests.get, f"https://xkcd.com/{randomNum}/info.0.json")
+        data = response.json()
+    # Keep latest xkcd data
+    elif num == "latest":
+        data = latest
+    # Invalid xkcd number
+    elif num < 1 or num > latest["num"]:
+        await intr.send(embeds = [
+            embed.createEmbed(None, f"xkcd number must be between 1 and {latest['num']}.", "", intr.user, 0xFF0000)
+        ])
+        return
+    # Get specified xkcd number
+    else:
+        response = await loop.run_in_executor(None, requests.get, f"https://xkcd.com/{num}/info.0.json")
+        data = response.json()
+
+    # Create and send embed with xkcd
+    e = embed.createEmbed(intr.guild, f"xkcd {data['num']}: {data['title']}", data["alt"], intr.user, 0x00FF00)
+    e.set_image(data["img"])
+    e.url = f"https://xkcd.com/{data['num']}"
+    await intr.send(embeds = [e])
+
+# xkcd commands
+@bot.slash_command()
+async def xkcd(intr: nextcord.Interaction):
+    pass
+
+@xkcd.subcommand(description = "Fetch an xkcd")
+async def fetch(intr: nextcord.Interaction, number: int):
+    await fetchxkcd(number, intr)
+
+@xkcd.subcommand(description = "Fetch the latest xkcd")
+async def latest(intr: nextcord.Interaction):
+    await fetchxkcd("latest", intr)
+
+@xkcd.subcommand(description = "Fetch a random xkcd")
+async def rand(intr: nextcord.Interaction):
+    await fetchxkcd("random", intr)
 
 bot.run(config.botToken)

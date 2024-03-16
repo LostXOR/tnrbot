@@ -34,8 +34,8 @@ class XKCD(commands.Cog):
             latest = response.json()
             # Pick random xkcd from 1 to latest
             if num == "random":
-                randomNum = random.randint(1, latest["num"])
-                response = await loop.run_in_executor(None, requests.get, f"https://xkcd.com/{randomNum}/info.0.json")
+                random_num = random.randint(1, latest["num"])
+                response = await loop.run_in_executor(None, requests.get, f"https://xkcd.com/{random_num}/info.0.json")
                 data = response.json()
             # Keep latest xkcd data
             elif num == "latest":
@@ -43,7 +43,7 @@ class XKCD(commands.Cog):
             # Invalid xkcd number
             elif num < 1 or num > latest["num"]:
                 await intr.send(embeds = [
-                    embed.createEmbed(None, f"xkcd number must be between 1 and {latest['num']}.", "", intr.user, 0xFF0000)
+                    embed.create_embed(None, f"xkcd number must be between 1 and {latest['num']}.", "", intr.user, 0xFF0000)
                 ])
                 return
             # Get specified xkcd number
@@ -52,7 +52,7 @@ class XKCD(commands.Cog):
                 data = response.json()
 
             # Create and send embed with xkcd
-            e = embed.createEmbed(intr.guild, f"xkcd {data['num']}: {data['title']}", data["alt"], intr.user, 0x00FF00)
+            e = embed.create_embed(intr.guild, f"xkcd {data['num']}: {data['title']}", data["alt"], intr.user, 0x00FF00)
             e.set_image(data["img"])
             e.url = f"https://xkcd.com/{data['num']}"
             await intr.send(embeds = [e])

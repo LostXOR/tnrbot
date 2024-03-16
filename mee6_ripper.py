@@ -2,9 +2,9 @@ import requests, sqlite3
 import config
 
 
-guildID = input("Guild ID: ")
-url = f"https://mee6.xyz/api/plugins/levels/leaderboard/{guildID}?page="
-db = sqlite3.connect(config.databasePath, isolation_level = None)
+guild_id = input("Guild ID: ")
+url = f"https://mee6.xyz/api/plugins/levels/leaderboard/{guild_id}?page="
+db = sqlite3.connect(config.database_path, isolation_level = None)
 cursor = db.cursor()
 cursor.execute(f"CREATE TABLE IF NOT EXISTS '{guildID}' (id, xp, lastxptime, cachedname, UNIQUE(id))")
 
@@ -16,7 +16,7 @@ while True:
     if len(response["players"]) == 0:
         break
     for user in response["players"]:
-        cursor.execute(f"INSERT OR REPLACE INTO '{guildID}' VALUES (?, ?, ?, ?)", [
+        cursor.execute(f"INSERT OR REPLACE INTO '{guild_id}' VALUES (?, ?, ?, ?)", [
             int(user["id"]),
             user["xp"],
             0,

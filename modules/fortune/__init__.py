@@ -16,5 +16,5 @@ class Fortune(commands.Cog):
     async def fortune(self, intr: nextcord.Interaction):
         fortune = random.choice(self.fortunes)
         await intr.send(embeds = [
-            embed.createEmbed(intr.guild, fortune, "", intr.user, 0x00FF00)
+            embed.create_embed(intr.guild, fortune, "", intr.user, 0x00FF00)
         ])

@@ -40,8 +40,8 @@ class MagicBall(commands.Cog):
         await intr.response.defer()
         # If model is loaded, generate from model
         if hasattr(self, "model") and hasattr(self, "tokenizer"):
-            tokenizedQuestion = self.tokenizer(question, return_tensors = "pt").input_ids
-            answer = self.tokenizer.decode(self.model.generate(tokenizedQuestion, max_length = 100)[0])
+            tokenized_question = self.tokenizer(question, return_tensors = "pt").input_ids
+            answer = self.tokenizer.decode(self.model.generate(tokenized_question, max_length = 100)[0])
             # Make sure answer is (hopefully somewhat) coherent
             if len(answer) < 256 and answer.startswith("<pad>") and answer.endswith("</s>") and "<unk>" not in answer:
                 answer = answer.removeprefix("<pad>").removesuffix("</s>")
@@ -49,6 +49,6 @@ class MagicBall(commands.Cog):
             else: answer = random.choice(responses)
         else: answer = random.choice(responses)
         # Send answer
-        e = embed.createEmbed(None, question, answer, intr.user, 0x00FF00)
+        e = embed.create_embed(None, question, answer, intr.user, 0x00FF00)
         e.set_author(name = "Magic Ball™", icon_url = "https://magic-8ball.com/wp-content/uploads/ball.png")
         await intr.send(embeds = [e])

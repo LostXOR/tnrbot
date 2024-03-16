@@ -1,34 +1,34 @@
 # Represents a user's level
 class Level:
     def __init__(self, xp):
-        self.__XP = xp
+        self.__xp = xp
     # Human-readable str() function
     def __str__(self):
-        return f"Level {self.getLevel()}, {self.getXPProgress()}/{self.getXPLevel()} XP"
+        return f"Level {self.get_level()}, {self.get_xp_progress()}/{self.get_xp_level()} XP"
     # Get total XP to reach a level
-    def __getTotalXP(self, level):
+    def __get_total_xp(self, level):
         return (10 * level ** 3 + 135 * level ** 2 + 455 * level) // 6
     # Get raw XP value
-    def getXP(self):
-        return self.__XP
+    def get_xp(self):
+        return self.__xp
     # Get level
-    def getLevel(self):
+    def get_level(self):
         level = 0
-        while self.__XP >= self.__getTotalXP(level + 1):
+        while self.__xp >= self.__get_total_xp(level + 1):
             level += 1
         return level
     # Get XP progress to next level
-    def getXPProgress(self):
-        return self.__XP - self.__getTotalXP(self.getLevel())
+    def get_xp_progress(self):
+        return self.__xp - self.__get_total_xp(self.get_level())
     # Get XP required for current level
-    def getXPLevel(self):
-        return 5 * self.getLevel() ** 2 + 50 * self.getLevel() + 100
+    def get_xp_level(self):
+        return 5 * self.get_level() ** 2 + 50 * self.get_level() + 100
     # Add XP
-    def addXP(self, XP):
-        self.__XP += XP
+    def add_xp(self, xp):
+        self.__xp += xp
     # Set level and XP
-    def setLevel(self, level, XP):
+    def set_level(self, level, XP):
         level = max(min(level, 1000), 0)
-        self.__XP = self.__getTotalXP(level)
-        XP = max(min(XP, self.getXPLevel() - 1), 0)
-        self.__XP += XP
+        self.__xp = self.__get_total_xp(level)
+        XP = max(min(XP, self.get_xp_level() - 1), 0)
+        self.__xp += XP

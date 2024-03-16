@@ -1,7 +1,7 @@
 import nextcord
 from datetime import datetime
 
-def createEmbed(object, title, description, author, color):
+def create_embed(object, title, description, author, color):
     embed = nextcord.Embed(title = title, description = description, color = color, timestamp = datetime.now())
     name = object.name if object else ""
     if isinstance(object, nextcord.Member): icon = object.display_avatar.url

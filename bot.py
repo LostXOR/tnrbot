@@ -33,4 +33,4 @@ import modules.easter_eggs
 bot.add_cog(modules.easter_eggs.EasterEggs(bot))
 
 # Start up bot
-bot.run(config.botToken)
+bot.run(config.bot_token)

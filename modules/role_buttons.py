@@ -1,3 +1,4 @@
+import nextcord
 import nextcord.ext.commands as commands
 import embed
 

@@ -22,7 +22,7 @@ class MagicBall(commands.Cog):
         # Load LLM
         print("Downloading/loading Magic Ball LLM...")
         self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-small")
-        self.model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-small", do_sample = True, low_cpu_mem_usage = True)
+        self.model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-small", do_sample = True)
         print("Loaded Magic Ball LLM")
 
         # Add slash command only once LLM is loaded

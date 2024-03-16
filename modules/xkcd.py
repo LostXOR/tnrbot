@@ -9,22 +9,22 @@ class XKCD(commands.Cog):
         def __init__(self, bot):
             self.bot = bot
 
-            # xkcd commands
-            @bot.slash_command()
-            async def xkcd(intr: nextcord.Interaction):
-                pass
+        # xkcd commands
+        @nextcord.slash_command()
+        async def xkcd(self, intr: nextcord.Interaction):
+            pass
 
-            @xkcd.subcommand(description = "Fetch an xkcd")
-            async def fetch(intr: nextcord.Interaction, number: int):
-                await self.fetchxkcd(number, intr)
+        @xkcd.subcommand(description = "Fetch an xkcd")
+        async def fetch(self, intr: nextcord.Interaction, number: int):
+            await self.fetchxkcd(number, intr)
 
-            @xkcd.subcommand(description = "Fetch the latest xkcd")
-            async def latest(intr: nextcord.Interaction):
-                await self.fetchxkcd("latest", intr)
+        @xkcd.subcommand(description = "Fetch the latest xkcd")
+        async def latest(self, intr: nextcord.Interaction):
+            await self.fetchxkcd("latest", intr)
 
-            @xkcd.subcommand(description = "Fetch a random xkcd")
-            async def rand(intr: nextcord.Interaction):
-                await self.fetchxkcd("random", intr)
+        @xkcd.subcommand(description = "Fetch a random xkcd")
+        async def rand(self, intr: nextcord.Interaction):
+            await self.fetchxkcd("random", intr)
 
         # Fetch an xkcd
         async def fetchxkcd(self, num, intr):

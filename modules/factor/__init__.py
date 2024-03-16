@@ -6,7 +6,6 @@ import embed
 
 # Factor a number
 class Factor(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 

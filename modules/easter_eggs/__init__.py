@@ -3,7 +3,6 @@ import nextcord
 import nextcord.ext.commands as commands
 
 class EasterEggs(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
 

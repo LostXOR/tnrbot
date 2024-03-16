@@ -5,9 +5,7 @@ import embed
 import config
 
 class Levels(commands.Cog):
-
     def __init__(self, bot):
-
         self.bot = bot
         self.db = db.Database(config.databasePath)
 

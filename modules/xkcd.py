@@ -6,7 +6,6 @@ import nextcord.ext.commands as commands
 import embed
 
 class XKCD(commands.Cog):
-
         def __init__(self, bot):
             self.bot = bot
 

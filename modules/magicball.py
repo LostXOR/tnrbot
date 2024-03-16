@@ -13,10 +13,19 @@ logging.set_verbosity_error()
 class MagicBall(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
         # Asynchronously load LLM
         loop = asyncio.get_event_loop()
-        loop.run_in_executor(None, self.loadModel)
+        loop.run_in_executor(None, self.loadModel, bot)
 
+    def loadModel(self, bot):
+        # Load LLM
+        print("Downloading/loading Magic Ball LLM...")
+        self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-small")
+        self.model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-small", do_sample = True, low_cpu_mem_usage = True)
+        print("Loaded Magic Ball LLM")
+
+        # Add slash command only once LLM is loaded
         @bot.slash_command(description = "Ask the Magic Ball™ a question")
         async def magicball(intr: nextcord.Interaction, question: str = nextcord.SlashOption(name = "question", required = False)):
             responses = [
@@ -41,9 +50,3 @@ class MagicBall(commands.Cog):
             e = embed.createEmbed(None, answer, "", intr.user, 0x00FF00)
             e.set_author(name = "Magic Ball™", icon_url = "https://magic-8ball.com/wp-content/uploads/ball.png")
             await intr.send(embeds = [e])
-
-    def loadModel(self):
-        print("Downloading/loading Magic Ball LLM...")
-        self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-small")
-        self.model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-small", do_sample = True, low_cpu_mem_usage = True)
-        print("Loaded Magic Ball LLM")

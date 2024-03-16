@@ -2,9 +2,15 @@
 # TNRBot
 This is the Discord bot for the TotallyNotRobots Discord server.
 ## Installation
-Install `nextcord` and clone the repository.
+Install dependencies.
 ```
 pip3 install nextcord
+pip3 install requests
+pip3 install torch
+pip3 install sentencepiece
+```
+Clone the repository.
+```
 git clone https://github.com/LostXOR/levelbot
 cd levelbot
 ```

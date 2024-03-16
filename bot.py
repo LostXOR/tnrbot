@@ -22,6 +22,9 @@ bot.add_cog(modules.xkcd.XKCD(bot))
 # Level commands
 import modules.levels
 bot.add_cog(modules.levels.Levels(bot))
+# Magic Ball
+import modules.magicball
+bot.add_cog(modules.magicball.MagicBall(bot))
 # Easter eggs ;)
 import modules.easter_eggs
 bot.add_cog(modules.easter_eggs.EasterEggs(bot))

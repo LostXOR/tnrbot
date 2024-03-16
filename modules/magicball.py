@@ -37,7 +37,7 @@ class MagicBall(commands.Cog):
             "Outlook not so good", "Very doubtful"
         ]
         # Defer response to allow longer generation time (necessary on my slow server)
-        intr.defer()
+        intr.response.defer()
         # If model is loaded, generate from model
         if hasattr(self, "model") and hasattr(self, "tokenizer"):
             tokenizedQuestion = self.tokenizer(question, return_tensors = "pt").input_ids

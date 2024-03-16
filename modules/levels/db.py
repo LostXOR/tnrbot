@@ -1,4 +1,5 @@
-import sqlite3, user
+import sqlite3
+import modules.levels.user as user
 
 class Database:
     def __init__(self, databasePath):

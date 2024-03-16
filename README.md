@@ -8,7 +8,7 @@ pip3 install nextcord
 git clone https://github.com/LostXOR/levelbot
 cd levelbot
 ```
-Clone and build the quadratic sieve program from [here](https://github.com/michel-leonard/C-Quadratic-Sieve) and place the `qs` executable in the `levelbot` directory.
+Clone and build the quadratic sieve program from [here](https://github.com/michel-leonard/C-Quadratic-Sieve) and place the `qs` executable in the `levelbot/modules/factor/` directory.
 
 Add your bot's token to `config.py` and tweak any other configuration settings.
 ```

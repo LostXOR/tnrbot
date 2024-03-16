@@ -1,4 +1,5 @@
-import level
+import modules.levels.level as level
+
 # Represents a user from the database
 class User:
     def __init__(self, guildID, userID, XP, lastXPTime, cachedName):

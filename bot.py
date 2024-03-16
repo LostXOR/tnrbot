@@ -25,6 +25,9 @@ bot.add_cog(modules.levels.Levels(bot))
 # Magic Ball
 import modules.magicball
 bot.add_cog(modules.magicball.MagicBall(bot))
+# Fortunes
+import modules.fortune
+bot.add_cog(modules.fortune.Fortune(bot))
 # Easter eggs ;)
 import modules.easter_eggs
 bot.add_cog(modules.easter_eggs.EasterEggs(bot))

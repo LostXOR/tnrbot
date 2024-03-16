@@ -49,6 +49,6 @@ class MagicBall(commands.Cog):
             else: answer = random.choice(responses)
         else: answer = random.choice(responses)
         # Send answer
-        e = embed.createEmbed(None, answer, "", intr.user, 0x00FF00)
+        e = embed.createEmbed(None, question, answer, intr.user, 0x00FF00)
         e.set_author(name = "Magic Ball™", icon_url = "https://magic-8ball.com/wp-content/uploads/ball.png")
         await intr.send(embeds = [e])

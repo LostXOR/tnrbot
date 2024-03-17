@@ -1,36 +1,24 @@
-import nextcord
-import nextcord.ext.commands as commands
-import config
+"""Initializes the bot and loads all the modules."""
 
-# Initialize bot
+import nextcord
+from nextcord.ext import commands
+import config
+import modules
+
 bot = commands.Bot(intents = nextcord.Intents.all())
 
 @bot.event
 async def on_ready():
+    """Log when the bot's fully started up."""
     print("Bot started")
 
 # Load modules
-# TNR role buttons
-import modules.role_buttons
-bot.add_cog(modules.role_buttons.RoleButtons(bot))
-# Factoring command
-import modules.factor
-bot.add_cog(modules.factor.Factor(bot))
-# xkcd commands
-import modules.xkcd
-bot.add_cog(modules.xkcd.XKCD(bot))
-# Level commands
-import modules.levels
-bot.add_cog(modules.levels.Levels(bot))
-# Magic Ball
-import modules.magicball
-bot.add_cog(modules.magicball.MagicBall(bot))
-# Fortunes
-import modules.fortune
-bot.add_cog(modules.fortune.Fortune(bot))
-# Easter eggs ;)
-import modules.easter_eggs
+bot.add_cog(modules.role_buttons.RoleButtons())
+bot.add_cog(modules.factor.Factor())
+bot.add_cog(modules.xkcd.XKCD())
+bot.add_cog(modules.levels.Levels())
+bot.add_cog(modules.magicball.MagicBall())
+bot.add_cog(modules.fortune.Fortune())
 bot.add_cog(modules.easter_eggs.EasterEggs(bot))
 
-# Start up bot
-bot.run(config.bot_token)
+bot.run(config.BOT_TOKEN)

@@ -1,34 +1,46 @@
-# Represents a user's level
+"""A class to represent a user's level and provide handy ways to interact with it."""
+
 class Level:
-    def __init__(self, xp):
-        self.__xp = xp
-    # Human-readable str() function
+    """The class, omg!"""
+
+    def __init__(self, exp):
+        """Standard init function."""
+        self.__xp = exp
+
     def __str__(self):
+        """Human-readable str() function."""
         return f"Level {self.get_level()}, {self.get_xp_progress()}/{self.get_xp_level()} XP"
-    # Get total XP to reach a level
-    def __get_total_xp(self, level):
-        return (10 * level ** 3 + 135 * level ** 2 + 455 * level) // 6
-    # Get raw XP value
+
     def get_xp(self):
+        """Get raw XP value."""
         return self.__xp
-    # Get level
+
     def get_level(self):
+        """Get level."""
         level = 0
-        while self.__xp >= self.__get_total_xp(level + 1):
+        while self.__xp >= get_total_xp(level + 1):
             level += 1
         return level
-    # Get XP progress to next level
+
     def get_xp_progress(self):
-        return self.__xp - self.__get_total_xp(self.get_level())
-    # Get XP required for current level
+        """Get XP progress to next level."""
+        return self.__xp - get_total_xp(self.get_level())
+
     def get_xp_level(self):
+        """Get XP required for current level."""
         return 5 * self.get_level() ** 2 + 50 * self.get_level() + 100
-    # Add XP
-    def add_xp(self, xp):
-        self.__xp += xp
-    # Set level and XP
-    def set_level(self, level, XP):
+
+    def add_xp(self, exp):
+        """Add XP."""
+        self.__xp += exp
+
+    def set_level(self, level, exp):
+        """Set level and XP."""
         level = max(min(level, 1000), 0)
-        self.__xp = self.__get_total_xp(level)
-        XP = max(min(XP, self.get_xp_level() - 1), 0)
-        self.__xp += XP
+        self.__xp = get_total_xp(level)
+        exp = max(min(exp, self.get_xp_level() - 1), 0)
+        self.__xp += exp
+
+def get_total_xp(level):
+    """Get total XP to reach a level."""
+    return (10 * level ** 3 + 135 * level ** 2 + 455 * level) // 6

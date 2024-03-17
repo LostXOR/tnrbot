@@ -1,6 +1,8 @@
-bot_token = ""
-database_path = "db.sqlite3"
-xp_per_message = 20
-xp_timeout = 60
-page_size = 10
-announce_level_up = True
+"""General configuration for the bot."""
+
+BOT_TOKEN = ""
+DATABASE_PATH = "db.sqlite3"
+XP_PER_MESSAGE = 20
+XP_TIMEOUT = 60
+PAGE_SIZE = 10
+ANNOUNCE_LEVEL_UP = True

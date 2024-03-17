@@ -1,14 +1,17 @@
-import requests, sqlite3
-import config
+"""Rip level data from MEE6 leaderboards. Useful if you're moving on from MEE6."""
 
+import sqlite3
+import requests
+import config
 
 guild_id = input("Guild ID: ")
 url = f"https://mee6.xyz/api/plugins/levels/leaderboard/{guild_id}?page="
-db = sqlite3.connect(config.database_path, isolation_level = None)
+db = sqlite3.connect(config.DATABASE_PATH, isolation_level = None)
 cursor = db.cursor()
-cursor.execute(f"CREATE TABLE IF NOT EXISTS '{guildID}' (id, xp, lastxptime, cachedname, UNIQUE(id))")
+query = f"CREATE TABLE IF NOT EXISTS '{guild_id}' (id, xp, lastxptime, cachedname, UNIQUE(id))"
+cursor.execute(query)
 
-index = 0
+index = 0 # pylint: disable=C0103
 while True:
     print(f"Requesting page {index}")
     response = requests.get(url + str(index)).json()

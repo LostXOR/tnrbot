@@ -17,7 +17,7 @@ bot.add_cog(modules.role_buttons.RoleButtons())
 bot.add_cog(modules.factor.Factor())
 bot.add_cog(modules.xkcd.XKCD())
 bot.add_cog(modules.levels.Levels())
-bot.add_cog(modules.magicball.MagicBall())
+bot.add_cog(modules.magic_ball.MagicBall())
 bot.add_cog(modules.fortune.Fortune())
 bot.add_cog(modules.easter_eggs.EasterEggs(bot))
 

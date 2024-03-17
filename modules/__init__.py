@@ -4,6 +4,6 @@ import modules.role_buttons
 import modules.factor
 import modules.xkcd
 import modules.levels
-import modules.magicball
+import modules.magic_ball
 import modules.fortune
 import modules.easter_eggs

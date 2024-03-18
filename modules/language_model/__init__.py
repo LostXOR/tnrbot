@@ -31,9 +31,9 @@ class LanguageModel(commands.Cog):
         os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
         from transformers import T5Tokenizer, T5ForConditionalGeneration, logging # pylint: disable=all
         logging.set_verbosity_error()
-        self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xl")
+        self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-large")
         self.model = T5ForConditionalGeneration.from_pretrained(
-            "google/flan-t5-xl", do_sample = True)
+            "google/flan-t5-large", do_sample = True)
         print("Loaded Magic Ball LLM")
 
     @nextcord.slash_command(description = "Ask the Magic Ball™ a question")

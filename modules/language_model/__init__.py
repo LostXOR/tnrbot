@@ -31,9 +31,9 @@ class LanguageModel(commands.Cog):
         os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
         from transformers import T5Tokenizer, T5ForConditionalGeneration, logging # pylint: disable=all
         logging.set_verbosity_error()
-        self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-small")
+        self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xl")
         self.model = T5ForConditionalGeneration.from_pretrained(
-            "google/flan-t5-small", do_sample = True)
+            "google/flan-t5-xl", do_sample = True)
         print("Loaded Magic Ball LLM")
 
     @nextcord.slash_command(description = "Ask the Magic Ball™ a question")
@@ -65,11 +65,11 @@ class LanguageModel(commands.Cog):
     async def fortune(self, intr: nextcord.Interaction):
         """Slash command to get a fortune."""
         # If model is loaded, 30% chance to generate from model
-        if self.tokenizer and self.model and random.random() < 3:
-            # Defer response to allow longer generation time (necessary on my slow server)
+        if self.tokenizer and self.model and random.random() < 0.3:
+            # Defer response to allow longer generation time (model takes several seconds)
             await intr.response.defer()
             tokenized_question = self.tokenizer(
-                "Make a prediction about my future.", return_tensors = "pt").input_ids
+                "Tell me a fortune.", return_tensors = "pt").input_ids
             result = self.model.generate(tokenized_question, max_length = 100)[0]
             fortune = self.tokenizer.decode(result)
             # Make sure answer is (hopefully somewhat) coherent

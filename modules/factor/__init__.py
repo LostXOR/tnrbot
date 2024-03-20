@@ -36,23 +36,22 @@ class Factor(commands.Cog):
             return
 
         # Run qs on the number in the background
-        command = os.path.dirname(__file__) + "/qs --limit=99999 -s " + str(number_safe)
-        process = await asyncio.create_subprocess_shell(
-            command, stdout = asyncio.subprocess.PIPE, stderr = asyncio.subprocess.PIPE)
+        command = f"bash -c 'time {os.path.dirname(__file__)}/qs limit=99999 -s {number_safe}'"
+        process = await asyncio.create_subprocess_shell(command, stdout = asyncio.subprocess.PIPE,
+            stderr = asyncio.subprocess.PIPE, env = {"TIMEFORMAT": "%3R"})
         # Start handler for long running factorings
         task = asyncio.create_task(handle_long(intr, process))
-        result, err = await process.communicate()
+        result, time = await process.communicate()
         # Cancel handler
         task.cancel()
-
-        # Process threw an error
-        if err:
-            print(err)
+        # Process threw an error instead of a 5-6 digit timestamp
+        if len(time) > 6 or len(time) < 5:
+            print(time)
             await intr.send(embeds = [
                 embeds.create_embed(None, "Error during factorization.", "", intr.user, 0xFF0000)
             ])
         # Process timed out and was killed
-        elif result == b"":
+        elif len(result) == 0:
             await intr.send(embeds = [
                 embeds.create_embed(None, "Timeout during factorization.", "", intr.user, 0xFF0000)
             ])
@@ -60,12 +59,13 @@ class Factor(commands.Cog):
         else:
             await intr.send(embeds = [
                 embeds.create_embed(intr.guild,
-                    f"Factorization of {number_safe}", result.decode(), intr.user, 0x00FF00)
+                    f"Factorization of {number_safe}", result.decode() + \
+                    "\nExecution time: " + time.decode()[:-1] + "s", intr.user, 0x00FF00)
             ])
 
 async def handle_long(intr, process):
-    """Handle long-running factorings by deferring after 2 seconds and killing after 60 seconds."""
-    await asyncio.sleep(2)
+    """Handle long-running factorings by deferring after 1 second and killing after 60 seconds."""
+    await asyncio.sleep(1)
     await intr.response.defer()
     await asyncio.sleep(60)
     await process._transport.close() # pylint: disable=W0212

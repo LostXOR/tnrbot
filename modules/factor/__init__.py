@@ -45,7 +45,7 @@ class Factor(commands.Cog):
         # Cancel handler
         task.cancel()
         # Process threw an error instead of a 5-6 digit timestamp
-        if len(time) > 6 or len(time) < 5:
+        if len(time) > 6:
             print(time)
             await intr.send(embeds = [
                 embeds.create_embed(None, "Error during factorization.", "", intr.user, 0xFF0000)

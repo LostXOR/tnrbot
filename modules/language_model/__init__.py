@@ -48,7 +48,7 @@ class LanguageModel(commands.Cog):
             result = self.model.generate(tokenized_question, max_length = 100)[0]
             answer = self.tokenizer.decode(result)
             # Make sure answer is (hopefully somewhat) coherent
-            if len(answer) < 256 and answer.endswith("</s>") and "<unk>" not in answer:
+            if len(answer) <= 2048 and answer.endswith("</s>") and "<unk>" not in answer:
                 answer = answer.removeprefix("<pad>").removesuffix("</s>")
         # If model isn't loaded or isn't coherent use a pregenerated response
             else:
@@ -73,7 +73,7 @@ class LanguageModel(commands.Cog):
             result = self.model.generate(tokenized_question, max_length = 100)[0]
             fortune = self.tokenizer.decode(result)
             # Make sure answer is (hopefully somewhat) coherent
-            if len(fortune) < 256 and fortune.endswith("</s>") and "<unk>" not in fortune:
+            if len(fortune) <= 2048 and fortune.endswith("</s>") and "<unk>" not in fortune:
                 fortune = fortune.removeprefix("<pad>").removesuffix("</s>")
 
         # If model isn't loaded or isn't coherent use a pregenerated response

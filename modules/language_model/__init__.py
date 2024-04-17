@@ -47,12 +47,9 @@ class LanguageModel(commands.Cog):
             tokenized_question = self.tokenizer(question, return_tensors = "pt").input_ids
             result = self.model.generate(tokenized_question, max_length = 100)[0]
             answer = self.tokenizer.decode(result)
-            # Make sure answer is (hopefully somewhat) coherent
-            if len(answer) <= 2048 and answer.endswith("</s>") and "<unk>" not in answer:
-                answer = answer.removeprefix("<pad>").removesuffix("</s>")
-        # If model isn't loaded or isn't coherent use a pregenerated response
-            else:
-                answer = random.choice(self.ball_responses)
+            answer = answer.removeprefix("<pad>").removesuffix("</s>")[:2048]
+
+        # If model isn't loaded use a pregenerated response
         else:
             answer = random.choice(self.ball_responses)
         # Send answer
@@ -72,16 +69,11 @@ class LanguageModel(commands.Cog):
                 "Tell me a fortune.", return_tensors = "pt").input_ids
             result = self.model.generate(tokenized_question, max_length = 100)[0]
             fortune = self.tokenizer.decode(result)
-            # Make sure answer is (hopefully somewhat) coherent
-            if len(fortune) <= 2048 and fortune.endswith("</s>") and "<unk>" not in fortune:
-                fortune = fortune.removeprefix("<pad>").removesuffix("</s>")
+            fortune = fortune.removeprefix("<pad>").removesuffix("</s>")[:2048]
 
-        # If model isn't loaded or isn't coherent use a pregenerated response
-            else:
-                fortune = random.choice(self.fortunes)
+        # If model isn't loaded use a pregenerated response
         else:
             fortune = random.choice(self.fortunes)
-
         # Send fortune
         await intr.send(embeds = [
             embeds.create_embed(intr.guild, fortune, "", intr.user, 0x00FF00)

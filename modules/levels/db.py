@@ -38,3 +38,7 @@ class Database:
             WHERE id NOT IN (SELECT id FROM '{guild.id}' \
             ORDER BY xp DESC LIMIT ?) ORDER BY xp DESC LIMIT ?", [start, count]).fetchall()
         return [user.User(guild.id, *member) for member in leaderboard]
+
+    def get_place(self, user):
+        """Get the leaderboard place of a user."""
+        return self.__cursor.execute(f"SELECT COUNT(*) FROM '{user.get_guild_id()}' WHERE xp > {user.level.get_xp()}").fetchone()[0] + 1

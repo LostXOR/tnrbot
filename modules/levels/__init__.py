@@ -20,9 +20,10 @@ class Levels(commands.Cog):
         # Fetch user data
         member = member if member else intr.user
         user = self.database.get_user(intr.guild, member)
+        place = self.database.get_place(user)
         # Embed and send
         await intr.send(embeds = [
-            embeds.create_embed(member, str(user.level), "", intr.user, 0x00FF00)
+            embeds.create_embed(member, f"#{place}, " + str(user.level), "", intr.user, 0x00FF00)
         ])
 
     @nextcord.slash_command(description = "Set a user's level and XP")

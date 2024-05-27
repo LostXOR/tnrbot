@@ -24,7 +24,7 @@ class EasterEggs(commands.Cog):
             await msg.channel.send(
                 files = [nextcord.File(os.path.dirname(__file__) + "/bird_halp.jpg")])
         # Respond to "!level" or "!rank" (TinRobit only)
-        elif msg.user.id == 252511786891214849 and (msg.content == "!level" or msg.content == "!rank"):
+        elif msg.author.id == 252511786891214849 and (msg.content == "!level" or msg.content == "!rank"):
             await msg.channel.send("tin it's /level i swear to god")
 
     @commands.Cog.listener("on_ready")

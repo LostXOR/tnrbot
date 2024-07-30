@@ -24,6 +24,26 @@ class LanguageModel(commands.Cog):
         self.fortunes = fortune_file.read().split("\n%\n")[:-1]
         self.ball_responses = ball_file.read().split("\n")[:-1]
 
+    def sanitize_output(self, output):
+        """Remove weird unknown and padding characters from language model output, in a fun way."""
+        output = output.removeprefix("<pad>").removesuffix("</s>")
+        while "<unk>" in output:
+            # Preset replacement words
+            num = random.random()
+            if num > 0.75:
+                replacement = "cunk"
+            elif num > 0.5:
+                replacement = "philomena"
+            # Use language model to find a replacement
+            else:
+                tokens = tokenized_question = self.tokenizer(
+                    "random word", return_tensors = "pt").input_ids
+                result = self.model.generate(tokens, max_length = 10)[0]
+                replacement = self.sanitize_output(self.tokenizer.decode(result))
+            output = output.replace("<unk>", replacement, 1)
+
+        return output
+
     def load_model(self):
         """Load the language model into memory."""
         print("Downloading/loading Magic Ball LLM...")
@@ -45,9 +65,9 @@ class LanguageModel(commands.Cog):
             await intr.response.defer()
             # Generate from model
             tokenized_question = self.tokenizer(question, return_tensors = "pt").input_ids
-            result = self.model.generate(tokenized_question, max_length = 100)[0]
+            result = self.model.generate(tokenized_question, max_length = 200)[0]
             answer = self.tokenizer.decode(result)
-            answer = answer.removeprefix("<pad>").removesuffix("</s>")[:2048]
+            answer = self.sanitize_output(answer)[:2048]
 
         # If model isn't loaded use a pregenerated response
         else:
@@ -67,9 +87,9 @@ class LanguageModel(commands.Cog):
             await intr.response.defer()
             tokenized_question = self.tokenizer(
                 "Tell me a fortune.", return_tensors = "pt").input_ids
-            result = self.model.generate(tokenized_question, max_length = 100)[0]
+            result = self.model.generate(tokenized_question, max_length = 200)[0]
             fortune = self.tokenizer.decode(result)
-            fortune = fortune.removeprefix("<pad>").removesuffix("</s>")[:2048]
+            fortune = self.sanitize_output(fortune)[:256]
 
         # If model isn't loaded use a pregenerated response
         else:

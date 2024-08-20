@@ -24,16 +24,21 @@ class LanguageModel(commands.Cog):
         self.fortunes = fortune_file.read().split("\n%\n")[:-1]
         self.ball_responses = ball_file.read().split("\n")[:-1]
 
+    def sanitize_output(self, output):
+        """Remove padding characters from language model output."""
+
+        return output.replace("<s>", "").replace("</s>", "").replace("<pad>", "")
+
     def load_model(self):
         """Load the language model into memory."""
         print("Downloading/loading Magic Ball LLM...")
         # Needed to prevent most logging from transformers and TensorFlow
         os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-        from transformers import T5Tokenizer, T5ForConditionalGeneration, logging # pylint: disable=all
+        from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, logging # pylint: disable=all
         logging.set_verbosity_error()
-        self.tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-large")
-        self.model = T5ForConditionalGeneration.from_pretrained(
-            "google/flan-t5-large", do_sample = True)
+        self.tokenizer = AutoTokenizer.from_pretrained("bigscience/T0_3B")
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(
+            "bigscience/T0_3B", do_sample = True)
         print("Loaded Magic Ball LLM")
 
     @nextcord.slash_command(description = "Ask the Magic Ball™ a question")
@@ -45,9 +50,9 @@ class LanguageModel(commands.Cog):
             await intr.response.defer()
             # Generate from model
             tokenized_question = self.tokenizer(question, return_tensors = "pt").input_ids
-            result = self.model.generate(tokenized_question, max_length = 100)[0]
+            result = self.model.generate(tokenized_question, max_length = 400)[0]
             answer = self.tokenizer.decode(result)
-            answer = answer.removeprefix("<pad>").removesuffix("</s>")[:2048]
+            answer = self.sanitize_output(answer)[:4096]
 
         # If model isn't loaded use a pregenerated response
         else:
@@ -61,15 +66,15 @@ class LanguageModel(commands.Cog):
     @nextcord.slash_command(description = "Tell your future!")
     async def fortune(self, intr: nextcord.Interaction):
         """Slash command to get a fortune."""
-        # If model is loaded, 30% chance to generate from model
-        if self.tokenizer and self.model and random.random() < 0.3:
+        # If model is loaded, 75% chance to generate from model
+        if self.tokenizer and self.model and random.random() < 0.75:
             # Defer response to allow longer generation time (model takes several seconds)
             await intr.response.defer()
             tokenized_question = self.tokenizer(
-                "Tell me a fortune.", return_tensors = "pt").input_ids
-            result = self.model.generate(tokenized_question, max_length = 100)[0]
+                "Make a mystical prediction about your future.", return_tensors = "pt").input_ids
+            result = self.model.generate(tokenized_question, max_length = 20)[0]
             fortune = self.tokenizer.decode(result)
-            fortune = fortune.removeprefix("<pad>").removesuffix("</s>")[:2048]
+            fortune = self.sanitize_output(fortune)[:256]
 
         # If model isn't loaded use a pregenerated response
         else:

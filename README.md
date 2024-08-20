@@ -8,6 +8,7 @@ pip3 install nextcord
 pip3 install requests
 pip3 install torch
 pip3 install sentencepiece
+pip3 install protobuf
 ```
 Clone the repository.
 ```

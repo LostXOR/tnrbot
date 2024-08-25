@@ -1,6 +1,7 @@
 """Commands for asking questions and getting fortunes from a language model."""
 
 import os
+import time
 import asyncio
 import random
 import nextcord
@@ -26,8 +27,7 @@ class LanguageModel(commands.Cog):
 
     def sanitize_output(self, output):
         """Remove padding characters from language model output."""
-
-        return output.replace("<s>", "").replace("</s>", "").replace("<pad>", "")
+        return output.replace("<s>", "").replace("</s>", "").replace("<pad>", "").strip()
 
     def load_model(self):
         """Load the language model into memory."""
@@ -45,9 +45,10 @@ class LanguageModel(commands.Cog):
     async def magicball(self, intr: nextcord.Interaction, question: str):
         """Slash command for "Magic Ball"."""
 
+        # Defer response to allow longer generation time (necessary on my slow server)
+        await intr.response.defer()
+
         if self.tokenizer and self.model:
-            # Defer response to allow longer generation time (necessary on my slow server)
-            await intr.response.defer()
             # Generate from model
             tokenized_question = self.tokenizer(question, return_tensors = "pt").input_ids
             result = self.model.generate(tokenized_question, max_length = 400)[0]
@@ -56,6 +57,7 @@ class LanguageModel(commands.Cog):
 
         # If model isn't loaded use a pregenerated response
         else:
+            time.sleep(random.random() * 10)
             answer = random.choice(self.ball_responses)
         # Send answer
         embed = embeds.create_embed(None, question, answer, intr.user, 0x00FF00)
@@ -66,18 +68,21 @@ class LanguageModel(commands.Cog):
     @nextcord.slash_command(description = "Tell your future!")
     async def fortune(self, intr: nextcord.Interaction):
         """Slash command to get a fortune."""
+        # Defer response to allow longer generation time (model takes several seconds)
+        await intr.response.defer()
         # If model is loaded, 75% chance to generate from model
         if self.tokenizer and self.model and random.random() < 0.75:
-            # Defer response to allow longer generation time (model takes several seconds)
-            await intr.response.defer()
             tokenized_question = self.tokenizer(
                 "Make a mystical prediction about your future.", return_tensors = "pt").input_ids
-            result = self.model.generate(tokenized_question, max_length = 20)[0]
-            fortune = self.tokenizer.decode(result)
-            fortune = self.sanitize_output(fortune)[:256]
+            result = self.model.generate(tokenized_question, max_length = 50)[0]
+            fortune = self.sanitize_output(self.tokenizer.decode(result))
+            if fortune[-1].isalpha():
+                fortune += "."
+            fortune = fortune.capitalize().replace(" i ", " I ")[:256]
 
         # If model isn't loaded use a pregenerated response
         else:
+            time.sleep(random.random() * 7.77 * 2 + 2)
             fortune = random.choice(self.fortunes)
         # Send fortune
         await intr.send(embeds = [

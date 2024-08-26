@@ -69,10 +69,17 @@ class LanguageModel(commands.Cog):
         """Slash command to get a fortune."""
         # Defer response to allow longer generation time (model takes several seconds)
         await intr.response.defer()
-        # If model is loaded, generate from model
-        if self.tokenizer and self.model:
-            fortune = list(await self.loop.run_in_executor(None, self.generate_response, f"Make a mystical prediction about the future of someone named {intr.user.name}.", 200))
+        # If model is loaded, 75% chance to generate from model
+        if self.tokenizer and self.model and random.random() > 0.25:
+            fortune = await self.loop.run_in_executor(None, self.generate_response, f"Make a mystical prediction about the future of someone named {intr.user.name}.", 200)
+
+            # 75% chance to replace user's name with "you"
+            if random.random() > 0.25:
+                fortune = fortune.replace(intr.user.name, "you")
+
             # Correct caps and punctuation
+            fortune = list(fortune)
+            fortune[0] = fortune[0].upper()
             if fortune[-1] not in "?!.":
                 fortune += "."
             for i in range(2, len(fortune)):
@@ -80,10 +87,11 @@ class LanguageModel(commands.Cog):
                     fortune[i] = fortune[i].upper()
                 if fortune[i] == "i" and fortune[i - 1] == " " and not fortune[i + 1].isalpha():
                     fortune[i] = fortune[i].upper()
-            fortune = "".join(fortune).capitalize()
+            fortune = "".join(fortune)
 
-        # If model isn't loaded or name was used in fortune, use a pregenerated response
-        if not self.tokenizer or not self.model or intr.user.name in fortune.lower() and random.random() < 0.8:
+
+        # If model isn't loaded, pregenerated response
+        else:
             await asyncio.sleep(random.random() * 7.77 * 2 + 2)
             fortune = random.choice(self.fortunes)
 

@@ -1,7 +1,6 @@
 """Commands for asking questions and getting fortunes from a language model."""
 
 import os
-import time
 import asyncio
 import random
 import nextcord
@@ -16,18 +15,14 @@ class LanguageModel(commands.Cog):
         # Load LM asynchronously to allow everything else to start up first
         self.tokenizer = None
         self.model = None
-        loop = asyncio.get_event_loop()
-        loop.run_in_executor(None, self.load_model)
+        self.loop = asyncio.get_event_loop()
+        self.loop.run_in_executor(None, self.load_model)
 
         # Load fortunes and Magic Ball responses
         fortune_file = open(os.path.dirname(__file__) + "/fortunes.txt", "r", encoding = "utf-8")
         ball_file = open(os.path.dirname(__file__) + "/magic_ball.txt", "r", encoding = "utf-8")
         self.fortunes = fortune_file.read().split("\n%\n")[:-1]
         self.ball_responses = ball_file.read().split("\n")[:-1]
-
-    def sanitize_output(self, output):
-        """Remove padding characters from language model output."""
-        return output.replace("<s>", "").replace("</s>", "").replace("<pad>", "").strip()
 
     def load_model(self):
         """Load the language model into memory."""
@@ -41,6 +36,14 @@ class LanguageModel(commands.Cog):
             "bigscience/T0_3B", do_sample = True)
         print("Loaded Magic Ball LLM")
 
+
+    def generate_response(self, prompt, max_length):
+        """Generate a response using the model. Needs to be its own function to run async."""
+        tokenized_prompt = self.tokenizer(prompt, return_tensors = "pt").input_ids
+        result = self.model.generate(tokenized_prompt, max_length = max_length)[0]
+        response = self.tokenizer.decode(result)
+        return response.replace("<s>", "").replace("</s>", "").replace("<pad>", "").strip()
+
     @nextcord.slash_command(description = "Ask the Magic Ball™ a question")
     async def magicball(self, intr: nextcord.Interaction, question: str):
         """Slash command for "Magic Ball"."""
@@ -50,14 +53,10 @@ class LanguageModel(commands.Cog):
 
         if self.tokenizer and self.model:
             # Generate from model
-            tokenized_question = self.tokenizer(question, return_tensors = "pt").input_ids
-            result = self.model.generate(tokenized_question, max_length = 400)[0]
-            answer = self.tokenizer.decode(result)
-            answer = self.sanitize_output(answer)[:4096]
-
+            answer = (await self.loop.run_in_executor(None, self.generate_response, question, 800))[:4096]
         # If model isn't loaded use a pregenerated response
         else:
-            time.sleep(random.random() * 10)
+            await asyncio.sleep(random.random() * 10)
             answer = random.choice(self.ball_responses)
         # Send answer
         embed = embeds.create_embed(None, question, answer, intr.user, 0x00FF00)
@@ -70,21 +69,25 @@ class LanguageModel(commands.Cog):
         """Slash command to get a fortune."""
         # Defer response to allow longer generation time (model takes several seconds)
         await intr.response.defer()
-        # If model is loaded, 75% chance to generate from model
-        if self.tokenizer and self.model and random.random() < 0.75:
-            tokenized_question = self.tokenizer(
-                "Make a mystical prediction about your future.", return_tensors = "pt").input_ids
-            result = self.model.generate(tokenized_question, max_length = 50)[0]
-            fortune = self.sanitize_output(self.tokenizer.decode(result))
-            if fortune[-1].isalpha():
+        # If model is loaded, generate from model
+        if self.tokenizer and self.model:
+            fortune = list(await self.loop.run_in_executor(None, self.generate_response, f"Make a mystical prediction about the future of someone named {intr.user.name}.", 200))
+            # Correct caps and punctuation
+            if fortune[-1] not in "?!.":
                 fortune += "."
-            fortune = fortune.capitalize().replace(" i ", " I ")[:256]
+            for i in range(2, len(fortune)):
+                if fortune[i - 2] == ".":
+                    fortune[i] = fortune[i].upper()
+                if fortune[i] == "i" and fortune[i - 1] == " " and not fortune[i + 1].isalpha():
+                    fortune[i] = fortune[i].upper()
+            fortune = "".join(fortune).capitalize()
 
-        # If model isn't loaded use a pregenerated response
-        else:
-            time.sleep(random.random() * 7.77 * 2 + 2)
+        # If model isn't loaded or name was used in fortune, use a pregenerated response
+        if not self.tokenizer or not self.model or intr.user.name in fortune.lower() and random.random() < 0.8:
+            await asyncio.sleep(random.random() * 7.77 * 2 + 2)
             fortune = random.choice(self.fortunes)
+
         # Send fortune
         await intr.send(embeds = [
-            embeds.create_embed(intr.guild, fortune, "", intr.user, 0x00FF00)
+            embeds.create_embed(intr.guild, fortune[:256], fortune[256:4096 + 256], intr.user, 0x00FF00)
         ])

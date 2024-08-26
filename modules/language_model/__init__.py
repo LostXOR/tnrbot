@@ -15,6 +15,7 @@ class LanguageModel(commands.Cog):
         # Load LM asynchronously to allow everything else to start up first
         self.tokenizer = None
         self.model = None
+        self.generating = False
         self.loop = asyncio.get_event_loop()
         self.loop.run_in_executor(None, self.load_model)
 
@@ -39,9 +40,11 @@ class LanguageModel(commands.Cog):
 
     def generate_response(self, prompt, max_length):
         """Generate a response using the model. Needs to be its own function to run async."""
+        self.generating = True
         tokenized_prompt = self.tokenizer(prompt, return_tensors = "pt").input_ids
         result = self.model.generate(tokenized_prompt, max_length = max_length)[0]
         response = self.tokenizer.decode(result)
+        self.generating = False
         return response.replace("<s>", "").replace("</s>", "").replace("<pad>", "").strip()
 
     @nextcord.slash_command(description = "Ask the Magic Ball™ a question")
@@ -51,7 +54,7 @@ class LanguageModel(commands.Cog):
         # Defer response to allow longer generation time (necessary on my slow server)
         await intr.response.defer()
 
-        if self.tokenizer and self.model:
+        if self.tokenizer and self.model and not self.generating:
             # Generate from model
             answer = (await self.loop.run_in_executor(None, self.generate_response, question, 800))[:4096]
         # If model isn't loaded use a pregenerated response
@@ -70,7 +73,7 @@ class LanguageModel(commands.Cog):
         # Defer response to allow longer generation time (model takes several seconds)
         await intr.response.defer()
         # If model is loaded, 75% chance to generate from model
-        if self.tokenizer and self.model and random.random() > 0.25:
+        if self.tokenizer and self.model and random.random() > 0.25 and not self.generating:
             fortune = await self.loop.run_in_executor(None, self.generate_response, f"Make a mystical prediction about the future of someone named {intr.user.name}.", 200)
 
             # 75% chance to replace user's name with "you"

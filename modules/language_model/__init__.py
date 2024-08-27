@@ -86,7 +86,7 @@ class LanguageModel(commands.Cog):
             if fortune[-1] not in "?!.":
                 fortune += "."
             for i in range(2, len(fortune)):
-                if fortune[i - 2] == ".":
+                if fortune[i-2:i] == ". " or fortune[i-1] == ".":
                     fortune[i] = fortune[i].upper()
                 if fortune[i] == "i" and fortune[i - 1] == " " and not fortune[i + 1].isalpha():
                     fortune[i] = fortune[i].upper()

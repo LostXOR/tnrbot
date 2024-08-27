@@ -56,13 +56,13 @@ class LanguageModel(commands.Cog):
 
         if self.tokenizer and self.model and not self.generating:
             # Generate from model
-            answer = (await self.loop.run_in_executor(None, self.generate_response, question, 800))[:4096]
+            answer = (await self.loop.run_in_executor(None, self.generate_response, question, 800))
         # If model isn't loaded use a pregenerated response
         else:
             await asyncio.sleep(random.random() * 10)
             answer = random.choice(self.ball_responses)
         # Send answer
-        embed = embeds.create_embed(None, question, answer, intr.user, 0x00FF00)
+        embed = embeds.create_embed(None, question[:256], answer[:4096], intr.user, 0x00FF00)
         embed.set_author(name = "Magic Ball™",
             icon_url = "https://magic-8ball.com/wp-content/uploads/ball.png")
         await intr.send(embeds = [embed])

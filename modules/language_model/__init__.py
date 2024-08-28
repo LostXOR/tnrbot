@@ -44,8 +44,16 @@ class LanguageModel(commands.Cog):
         tokenized_prompt = self.tokenizer(prompt, return_tensors = "pt").input_ids
         result = self.model.generate(tokenized_prompt, max_length = max_length)[0]
         response = self.tokenizer.decode(result)
+        response = response.replace("<s>", "").replace("</s>", "").replace("<pad>", "").strip()
+        # Get rid of those pesky <unk>s
+        while "<unk>" in response and random.random() > 0.1:
+            if random.random() > 0.5:
+                replacement = self.generate_response("tell me a random word", 10)
+            else:
+                replacement = random.choice(["cunk", "philomena"])
+            response = response.replace("<unk>", replacement, 1)
         self.generating = False
-        return response.replace("<s>", "").replace("</s>", "").replace("<pad>", "").strip()
+        return response
 
     @nextcord.slash_command(description = "Ask the Magic Ball™ a question")
     async def magicball(self, intr: nextcord.Interaction, question: str):

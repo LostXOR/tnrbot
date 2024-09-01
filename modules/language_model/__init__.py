@@ -38,17 +38,18 @@ class LanguageModel(commands.Cog):
         print("Loaded Magic Ball LLM")
 
 
-    def generate_response(self, prompt, max_length):
+    def generate_response(self, prompt, max_length, max_time):
         """Generate a response using the model. Needs to be its own function to run async."""
         self.generating = True
         tokenized_prompt = self.tokenizer(prompt, return_tensors = "pt").input_ids
-        result = self.model.generate(tokenized_prompt, max_length = max_length)[0]
+        result = self.model.generate(tokenized_prompt, max_new_tokens = max_length, max_time = max_time)[0]
         response = self.tokenizer.decode(result)
         response = response.replace("<s>", "").replace("</s>", "").replace("<pad>", "").strip()
+
         # Get rid of those pesky <unk>s
         while "<unk>" in response and random.random() > 0.1:
             if random.random() > 0.5:
-                replacement = self.generate_response("tell me a random word", 10)
+                replacement = self.generate_response("tell me a random word", 9999, 2)
             else:
                 replacement = random.choice(["cunk", "philomena"])
             response = response.replace("<unk>", replacement, 1)
@@ -64,8 +65,10 @@ class LanguageModel(commands.Cog):
 
         if self.tokenizer and self.model and not self.generating:
             # Generate from model
-            answer = (await self.loop.run_in_executor(None, self.generate_response, question, 800))
+            answer = (await self.loop.run_in_executor(None, self.generate_response, question, 2000, 600))
         # If model isn't loaded use a pregenerated response
+        elif self.generating and random.random() > 0.75:
+            answer = "NOT NOW MARGARET"
         else:
             await asyncio.sleep(random.random() * 10)
             answer = random.choice(self.ball_responses)
@@ -82,7 +85,7 @@ class LanguageModel(commands.Cog):
         await intr.response.defer()
         # If model is loaded, 75% chance to generate from model
         if self.tokenizer and self.model and random.random() > 0.25 and not self.generating:
-            fortune = await self.loop.run_in_executor(None, self.generate_response, f"Make a mystical prediction about the future of someone named {intr.user.name}.", 200)
+            fortune = await self.loop.run_in_executor(None, self.generate_response, f"Make a mystical prediction about the future of someone named {intr.user.name}.", 2000, 300)
 
             # 75% chance to replace user's name with "you"
             if random.random() > 0.25:

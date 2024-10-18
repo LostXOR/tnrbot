@@ -15,10 +15,13 @@ class BiasedRandom(commands.Cog):
         """Generates a random number."""
         dir = os.path.dirname(os.path.dirname(__file__))
         paths = [str(p) for p in pathlib.Path(dir).rglob("*.py") if "config.py" not in str(p)]
+        length = max(0, min(256, int(0.5 + size * (0.5 + random.random()))))
+
         with open(random.choice(paths), "r") as f:
-            contents = f.read(256)
-        length = min(256, int(0.5 + size * (0.5 + random.random())))
-        number = int.from_bytes(bytes(contents[:length], encoding = "utf-8"), byteorder = "big")
+            end = f.seek(0, 2)
+            f.seek(random.randint(0, end - length))
+            contents = f.read(length)
+        number = int.from_bytes(bytes(contents, encoding = "utf-8"), byteorder = "big")
 
         embed = embeds.create_embed(intr.guild, str(number)[:256], "", intr.user, 0x00FF00)
         await intr.send(embeds = [embed])

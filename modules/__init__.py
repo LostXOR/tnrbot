@@ -6,3 +6,4 @@ import modules.xkcd
 import modules.levels
 import modules.language_model
 import modules.easter_eggs
+import modules.biased_random

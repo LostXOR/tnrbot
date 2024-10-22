@@ -83,8 +83,8 @@ class LanguageModel(commands.Cog):
         """Slash command to get a fortune."""
         # Defer response to allow longer generation time (model takes several seconds)
         await intr.response.defer()
-        # If model is loaded, 75% chance to generate from model
-        if self.tokenizer and self.model and random.random() > 0.25 and not self.generating:
+        # If model is loaded, 67% chance to generate from model
+        if self.tokenizer and self.model and random.random() > 0.33 and not self.generating:
             fortune = await self.loop.run_in_executor(None, self.generate_response, f"Make a mystical prediction about the future of someone named {intr.user.name}.", 2000, 300)
 
             # 75% chance to replace user's name with "you"
@@ -108,6 +108,7 @@ class LanguageModel(commands.Cog):
         else:
             await asyncio.sleep(random.random() * 7.77 * 2 + 2)
             fortune = random.choice(self.fortunes)
+            fortune = fortune.replace("{{NAME}}", intr.user.global_name)
 
         # Send fortune
         await intr.send(embeds = [

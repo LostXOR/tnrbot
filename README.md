@@ -36,6 +36,7 @@ RATE_LIMIT_COSTS = {
     "magicball": 90,
     "fortune": 60
 }
+CONFESSION_CHANNEL = <CONFESSION CHANNEL ID>
 ```
 Run the bot.
 ```

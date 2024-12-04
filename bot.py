@@ -21,5 +21,6 @@ bot.add_cog(modules.language_model.LanguageModel())
 bot.add_cog(modules.easter_eggs.EasterEggs(bot))
 bot.add_cog(modules.biased_random.BiasedRandom())
 bot.add_cog(modules.rate_limiter.RateLimiter(bot))
+bot.add_cog(modules.confess.Confess())
 
 bot.run(config.BOT_TOKEN)

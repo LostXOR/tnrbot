@@ -5,21 +5,13 @@ import time
 import nextcord
 from nextcord.ext import commands
 import embeds
+import config
 
 class RateLimiter(commands.Cog):
     """The class where all the magic happens."""
 
     def __init__(self, bot):
         self.scores = {}
-        self.costs = {
-            "biasedrandom": 20,
-            "factor": 30,
-            "leaderboard": 20,
-            "level": 10,
-            "set_level": 0,
-            "magicball": 90,
-            "fortune": 60
-        }
         self.last_updated = time.time()
 
         # Need to define the event in the bot context so it's executed first
@@ -36,8 +28,8 @@ class RateLimiter(commands.Cog):
                 self.scores[intr.user.id] = 0
 
             # Run command if score is acceptable
-            cost = self.costs[intr.data["name"]]
-            if self.scores[intr.user.id] + cost < 200:
+            cost = config.RATE_LIMIT_COSTS[intr.data["name"]]
+            if self.scores[intr.user.id] + cost < config.RATE_LIMIT_THRESHOLD:
                 self.scores[intr.user.id] += cost
                 await bot.process_application_commands(intr)
             # Rate limit error
@@ -45,5 +37,5 @@ class RateLimiter(commands.Cog):
                 await intr.send(embeds = [
                     embeds.create_embed(
                         None, "Rate limit exceeded!",
-                        f"Calm down there, and wait a bit before trying again.",
+                        f"Calm down there, wait a bit before trying again.",
                         intr.user, 0xFF0000)], ephemeral = True)

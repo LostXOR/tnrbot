@@ -21,11 +21,21 @@ Clone and build the quadratic sieve program from [here](https://github.com/miche
 Add your bot's token to `config.py` and tweak any other configuration settings.
 ```
 botToken = "<YOUR TOKEN HERE>"
-databasePath = "db.sqlite3"
-xpPerMessage = 20
-xpTimeout = 60
-pageSize = 10
-announceLevelUp = True
+DATABASE_PATH = "db.sqlite3"
+XP_PER_MESSAGE = 20
+XP_TIMEOUT = 60
+PAGE_SIZE = 10
+ANNOUNCE_LEVEL_UP = True
+RATE_LIMIT_THRESHOLD = 200
+RATE_LIMIT_COSTS = {
+    "biasedrandom": 20,
+    "factor": 30,
+    "leaderboard": 20,
+    "level": 10,
+    "set_level": 0,
+    "magicball": 90,
+    "fortune": 60
+}
 ```
 Run the bot.
 ```

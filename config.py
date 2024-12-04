@@ -8,6 +8,7 @@ PAGE_SIZE = 10
 ANNOUNCE_LEVEL_UP = True
 RATE_LIMIT_THRESHOLD = 400
 RATE_LIMIT_COSTS = {
+    "xkcd": 20,
     "biasedrandom": 20,
     "factor": 30,
     "leaderboard": 20,
@@ -17,4 +18,7 @@ RATE_LIMIT_COSTS = {
     "fortune": 100,
     "confess": 200
 }
-CONFESSION_CHANNEL = 0
+GUILDS = [1234]
+CONFESSION_CHANNELS = {
+    1234: 5678
+}

@@ -13,7 +13,7 @@ class Levels(commands.Cog):
         """Set up database."""
         self.database = db.Database(config.DATABASE_PATH)
 
-    @nextcord.slash_command(description = "Get a user's level")
+    @nextcord.slash_command(description = "Get a user's level", guild_ids = config.GUILDS)
     async def level(self, intr: nextcord.Interaction,
         member: nextcord.Member = nextcord.SlashOption(name = "user", required = False)):
         """Slash command to display a user's level."""
@@ -26,7 +26,7 @@ class Levels(commands.Cog):
             embeds.create_embed(member, f"#{place}, " + str(user.level), "", intr.user, 0x00FF00)
         ])
 
-    @nextcord.slash_command(description = "Set a user's level and XP")
+    @nextcord.slash_command(description = "Set a user's level and XP", guild_ids = config.GUILDS)
     async def set_level(self, intr: nextcord.Interaction,
         member: nextcord.Member = nextcord.SlashOption(name = "user"),
         level: int = nextcord.SlashOption(name = "level"),
@@ -49,7 +49,7 @@ class Levels(commands.Cog):
             embeds.create_embed(member, f"Set to {user.level}", "", intr.user, 0x00FF00)
         ])
 
-    @nextcord.slash_command(description = "Get the leaderboard for a guild")
+    @nextcord.slash_command(description = "Get the leaderboard for a guild", guild_ids = config.GUILDS)
     async def leaderboard(self, intr: nextcord.Interaction,
         page: int = nextcord.SlashOption(name = "page", required = False)):
         """Display the guild level leaderboard."""

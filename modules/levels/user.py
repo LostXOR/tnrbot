@@ -6,7 +6,7 @@ from modules.levels import level
 class User:
     """The class itself."""
 
-    def __init__(self, guild_id, user_id, exp, last_xp_time, cached_name): # pylint: disable=R0913
+    def __init__(self, guild_id, user_id, exp, last_xp_time, cached_name): # pylint: disable=R0913,R0917
         """Set all the internal attributes and things."""
         self.__guild_id = guild_id
         self.__id = user_id

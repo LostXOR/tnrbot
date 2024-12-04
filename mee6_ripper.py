@@ -5,16 +5,16 @@ import requests
 import config
 
 guild_id = input("Guild ID: ")
-url = f"https://mee6.xyz/api/plugins/levels/leaderboard/{guild_id}?page="
+URL = f"https://mee6.xyz/api/plugins/levels/leaderboard/{guild_id}?page="
 db = sqlite3.connect(config.DATABASE_PATH, isolation_level = None)
 cursor = db.cursor()
-query = f"CREATE TABLE IF NOT EXISTS '{guild_id}' (id, xp, lastxptime, cachedname, UNIQUE(id))"
-cursor.execute(query)
+cursor.execute(
+    f"CREATE TABLE IF NOT EXISTS '{guild_id}' (id, xp, lastxptime, cachedname, UNIQUE(id))")
 
 index = 0 # pylint: disable=C0103
 while True:
     print(f"Requesting page {index}")
-    response = requests.get(url + str(index)).json()
+    response = requests.get(URL + str(index), timeout = 10).json()
 
     if len(response["players"]) == 0:
         break

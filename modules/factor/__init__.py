@@ -10,7 +10,7 @@ class Factor(commands.Cog):
     """The Cog where everything happens."""
 
     @nextcord.slash_command(description = "Factor a number")
-    async def factor(self, intr: nextcord.Interaction, number: str): # pylint: disable=R0201
+    async def factor(self, intr: nextcord.Interaction, number: str):
         """The command that handles the factoring."""
         # Just for LesPaulII :)
         if number == "💩":

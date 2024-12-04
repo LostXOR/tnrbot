@@ -11,21 +11,21 @@ class XKCD(commands.Cog):
     """The class where all the magic happens."""
 
     @nextcord.slash_command()
-    async def xkcd(self, intr: nextcord.Interaction): # pylint: disable=R0201
+    async def xkcd(self, intr: nextcord.Interaction):
         """Main "dummy" command that subcommands are attached to."""
 
     @xkcd.subcommand(description = "Fetch an xkcd")
-    async def fetch(self, intr: nextcord.Interaction, number: int): # pylint: disable=R0201
+    async def fetch(self, intr: nextcord.Interaction, number: int):
         """Fetch a specific xkcd."""
         await fetchxkcd(number, intr)
 
     @xkcd.subcommand(description = "Fetch the latest xkcd")
-    async def latest(self, intr: nextcord.Interaction): # pylint: disable=R0201
+    async def latest(self, intr: nextcord.Interaction):
         """Fetch the latest xkcd."""
         await fetchxkcd("latest", intr)
 
     @xkcd.subcommand(description = "Fetch a random xkcd")
-    async def rand(self, intr: nextcord.Interaction): # pylint: disable=R0201
+    async def rand(self, intr: nextcord.Interaction):
         """Fetch a random xkcd."""
         await fetchxkcd("random", intr)
 

@@ -7,15 +7,16 @@ Install dependencies.
 pip3 install nextcord
 pip3 install requests
 pip3 install torch
+pip3 install transformers
 pip3 install sentencepiece
 pip3 install protobuf
 ```
 Clone the repository.
 ```
-git clone https://github.com/LostXOR/levelbot
-cd levelbot
+git clone https://github.com/LostXOR/tnrbot
+cd tnrbot
 ```
-Clone and build the quadratic sieve program from [here](https://github.com/michel-leonard/C-Quadratic-Sieve) and place the `qs` executable in the `levelbot/modules/factor/` directory.
+Clone and build the quadratic sieve program from [here](https://github.com/michel-leonard/C-Quadratic-Sieve) and place the `qs` executable in the `tnrbot/modules/factor/` directory.
 
 Add your bot's token to `config.py` and tweak any other configuration settings.
 ```

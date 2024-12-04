@@ -2,9 +2,9 @@
 
 import nextcord
 from nextcord.ext import commands
-from modules.levels import db
 import embeds
 import config
+from modules.levels import db
 
 class Levels(commands.Cog):
     """Cog that's loaded."""

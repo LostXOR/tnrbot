@@ -9,7 +9,7 @@ class RoleButtons(commands.Cog):
 
     # Hardcoded role buttons
     @commands.Cog.listener("on_interaction")
-    async def on_interaction(self, intr): # pylint: disable=R0201
+    async def on_interaction(self, intr):
         """Catch interactions with the buttons and handle them."""
         roles_message = 1010024261659918396
         robot_button = "reaction_roles.button.1010024258791018496"
@@ -29,6 +29,9 @@ class RoleButtons(commands.Cog):
             role_to_remove = human_role if intr.user.get_role(human_role) \
                 else robot_role if intr.user.get_role(robot_role) else None
             role_to_add = human_role if not intr.user.get_role(human_role) else None
+        # Shouldn't be possible, but cover our asses anyways
+        else:
+            return
         # Send response to interaction
         if role_to_add and not role_to_remove:
             embed_text = f"Added <@&{role_to_add}>"

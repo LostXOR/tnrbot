@@ -11,13 +11,13 @@ class BiasedRandom(commands.Cog):
     """The class where all the magic happens."""
 
     @nextcord.slash_command(description = "Generate a mildly biased random number.")
-    async def biasedrandom(self, intr: nextcord.Interaction, size: int): # pylint: disable=R0201
+    async def biasedrandom(self, intr: nextcord.Interaction, size: int):
         """Generates a random number."""
-        dir = os.path.dirname(os.path.dirname(__file__))
-        paths = [str(p) for p in pathlib.Path(dir).rglob("*.py") if "config.py" not in str(p)]
+        base_dir = os.path.dirname(os.path.dirname(__file__))
+        paths = [str(p) for p in pathlib.Path(base_dir).rglob("*.py") if "config.py" not in str(p)]
         length = max(0, min(256, int(0.5 + size * (0.5 + random.random()))))
 
-        with open(random.choice(paths), "r") as f:
+        with open(random.choice(paths), "r", encoding = "utf-8") as f:
             end = f.seek(0, 2)
             f.seek(random.randint(0, end - length))
             contents = f.read(length)

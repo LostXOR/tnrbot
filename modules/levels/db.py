@@ -1,7 +1,7 @@
 """Represents the database of user level data."""
 
 import sqlite3
-from modules.levels import user
+from modules.levels.user import User
 
 class Database:
     """The class."""
@@ -17,7 +17,7 @@ class Database:
             f"CREATE TABLE IF NOT EXISTS '{guild.id}' (id, xp, lastxptime, cachedname, UNIQUE(id))")
         data = self.__cursor.execute(f"SELECT * FROM '{guild.id}' WHERE id = ?", [member.id]) \
             .fetchone()
-        return user.User(guild.id, *data) if data else user.User(guild.id, member.id, 0, 0, None)
+        return User(guild.id, *data) if data else User(guild.id, member.id, 0, 0, None)
 
     def save_user(self, member):
         """Save a user to the database."""
@@ -37,8 +37,10 @@ class Database:
         leaderboard = self.__cursor.execute(f"SELECT * FROM '{guild.id}' \
             WHERE id NOT IN (SELECT id FROM '{guild.id}' \
             ORDER BY xp DESC LIMIT ?) ORDER BY xp DESC LIMIT ?", [start, count]).fetchall()
-        return [user.User(guild.id, *member) for member in leaderboard]
+        return [User(guild.id, *member) for member in leaderboard]
 
     def get_place(self, user):
         """Get the leaderboard place of a user."""
-        return self.__cursor.execute(f"SELECT COUNT(*) FROM '{user.get_guild_id()}' WHERE xp > {user.level.get_xp()}").fetchone()[0] + 1
+        return self.__cursor.execute(
+            f"SELECT COUNT(*) FROM '{user.get_guild_id()}' WHERE xp > {user.level.get_xp()}") \
+            .fetchone()[0] + 1

@@ -12,7 +12,7 @@ class EasterEggs(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener("on_message")
-    async def on_message(self, msg): # pylint: disable=R0201
+    async def on_message(self, msg):
         """Preset responses to certain messages."""
         # Respond to mistypings of !rank (Added at the request of TinRobit)
         if msg.content == "!raml":
@@ -24,7 +24,7 @@ class EasterEggs(commands.Cog):
             await msg.channel.send(
                 files = [nextcord.File(os.path.dirname(__file__) + "/bird_halp.jpg")])
         # Respond to "!level" or "!rank" (TinRobit only)
-        elif msg.author.id == 252511786891214849 and (msg.content == "!level" or msg.content == "!rank"):
+        elif msg.author.id == 252511786891214849 and msg.content in ("!level", "rank"):
             await msg.channel.send("tin it's /level i swear to god")
 
     @commands.Cog.listener("on_ready")

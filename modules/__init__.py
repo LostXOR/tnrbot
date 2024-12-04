@@ -9,3 +9,4 @@ import modules.easter_eggs
 import modules.biased_random
 import modules.rate_limiter
 import modules.confess
+import modules.logger

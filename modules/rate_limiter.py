@@ -17,6 +17,11 @@ class RateLimiter(commands.Cog):
         # Need to define the event in the bot context so it's executed first
         @bot.event
         async def on_interaction(intr):
+            # Not a slash command or an unknown one
+            if "name" not in intr.data or intr.data["name"] not in config.RATE_LIMIT_COSTS:
+                await bot.process_application_commands(intr)
+                return
+
             # Decrement existing scores and delete negative ones
             for key in list(self.scores.keys()):
                 self.scores[key] -= time.time() - self.last_updated

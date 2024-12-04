@@ -78,7 +78,7 @@ class Levels(commands.Cog):
     @commands.Cog.listener("on_message")
     async def on_message(self, msg):
         """Add XP to users when they send messages."""
-        if msg.author.bot:
+        if msg.author.bot or msg.guild is None:
             return
         # Get user data from database and update cached name
         user = self.database.get_user(msg.guild, msg.author)

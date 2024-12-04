@@ -1,7 +1,8 @@
 """General configuration for the bot."""
 
-BOT_TOKEN = ""
+BOT_TOKEN = "<YOUR TOKEN HERE>"
 DATABASE_PATH = "db.sqlite3"
+LOG_PATH = "log.txt"
 XP_PER_MESSAGE = 20
 XP_TIMEOUT = 60
 PAGE_SIZE = 10
@@ -18,7 +19,7 @@ RATE_LIMIT_COSTS = {
     "fortune": 100,
     "confess": 200
 }
-GUILDS = [1234]
+GUILDS = [<GUILD IDS>]
 CONFESSION_CHANNELS = {
-    1234: 5678
+    <GUILD ID>: <CHANNEL ID>
 }

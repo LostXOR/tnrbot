@@ -24,7 +24,10 @@ class RateLimiter(commands.Cog):
 
             # Decrement existing scores and delete negative ones
             for key in list(self.scores.keys()):
-                self.scores[key] -= time.time() - self.last_updated
+                if key == 1156003455438159933: # Spammy guy gets 10x slow penalty
+                    self.scores[key] -= (time.time() - self.last_updated) / 10
+                else:
+                    self.scores[key] -= time.time() - self.last_updated
                 if self.scores[key] < 0:
                     del self.scores[key]
             self.last_updated = time.time()
